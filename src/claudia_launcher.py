@@ -36,15 +36,22 @@ import ui_claudia_launcher
 from shared import *
 
 # ------------------------------------------------------------------------------------------------------------
-# Imports (Carla)
+# Imports (Carla) which is either in '/usr/...' '/usr/local'
 
-try:
-    # Find the location of this file and assume add path to carla_utils at ../../../carla/resources
-    from os.path import dirname as dirup
-    thisSharePath = dirup(dirup(dirup(os.path.abspath(__file__))))
-    carlaLibPath = os.path.join(thisSharePath, "carla","resources")
-    sys.path.insert(0, carlaLibPath)
+import sys
+
+if os.path.exists("/usr/lib/carla/libcarla_utils.so"):
+    carlaLibPath = "/usr/lib/carla/libcarla_utils.so"
+    carlaPyPrefix = "/usr/share/carla/resources"
+    sys.path.insert(0, carlaPyPrefix)
+elif os.path.exists("/usr/local/lib/carla/libcarla_utils.so"):
+    carlaLibPath = "/usr/lib/carla/libcarla_utils.so"
+    carlaPyPrefix = "/usr/local/share/carla/resources"
+    sys.path.insert(0, carlaPyPrefix)
+else:
+    carlaLibPath = "/libcarla_utils.so"
     
+try:
     from carla_utils import *
     haveCarla = True
 except:
@@ -709,7 +716,7 @@ class ClaudiaLauncher(QWidget, ui_claudia_launcher.Ui_ClaudiaLauncherW):
                     if installed == "install":
                         pkglist.append(package.strip())
 
-            if 'carla-git' not in pkglist and any([os.path.exists("/usr/lib/carla"), os.path.exists("/usr/local/lib/carla")]):
+            if 'carla-git' not in pkglist and os.path.exists(carlaLibPath):
                 pkglist.append('carla-git')
 
             if not "bristol" in pkglist:
@@ -832,8 +839,8 @@ class ClaudiaLauncher(QWidget, ui_claudia_launcher.Ui_ClaudiaLauncherW):
 
                 last_pos += 1
 
-        if haveCarla and os.path.exists("/usr/lib/carla/libcarla_utils.so"):
-            utils = CarlaUtils("/usr/lib/carla/libcarla_utils.so")
+        if haveCarla and os.path.exists(carlaLibPath):
+            utils = CarlaUtils(carlaLibPath)
             last_pos = 0
             lv2path = os.getenv("LV2_PATH", "~/.lv2:/usr/lib/lv2:/usr/local/lib/lv2")
             for i in range(utils.get_cached_plugin_count(PLUGIN_LV2, lv2path)):
