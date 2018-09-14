@@ -39,6 +39,12 @@ from shared import *
 # Imports (Carla)
 
 try:
+    # Find the location of this file and assume add path to carla_utils at ../../../carla/resources
+    from os.path import dirname as dirup
+    thisSharePath = dirup(dirup(dirup(os.path.abspath(__file__))))
+    carlaLibPath = os.path.join(thisSharePath, "carla","resources")
+    sys.path.insert(0, carlaLibPath)
+    
     from carla_utils import *
     haveCarla = True
 except:
@@ -702,6 +708,9 @@ class ClaudiaLauncher(QWidget, ui_claudia_launcher.Ui_ClaudiaLauncherW):
                     package, installed = pkg_info.rsplit("\t", 1)
                     if installed == "install":
                         pkglist.append(package.strip())
+
+            if 'carla-git' not in pkglist and any([os.path.exists("/usr/lib/carla"), os.path.exists("/usr/local/lib/carla")]):
+                pkglist.append('carla-git')
 
             if not "bristol" in pkglist:
                 self.tabWidget.setTabEnabled(iTabBristol, False)
