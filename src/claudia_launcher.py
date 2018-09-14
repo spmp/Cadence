@@ -38,16 +38,12 @@ from shared import *
 # ------------------------------------------------------------------------------------------------------------
 # Imports (Carla) which is either in '/usr/...' '/usr/local'
 
-import sys
-
 if os.path.exists("/usr/lib/carla/libcarla_utils.so"):
     carlaLibPath = "/usr/lib/carla/libcarla_utils.so"
-    carlaPyPrefix = "/usr/share/carla/resources"
-    sys.path.insert(0, carlaPyPrefix)
+    sys.path.append("/usr/share/carla/resources")
 elif os.path.exists("/usr/local/lib/carla/libcarla_utils.so"):
     carlaLibPath = "/usr/lib/carla/libcarla_utils.so"
-    carlaPyPrefix = "/usr/local/share/carla/resources"
-    sys.path.insert(0, carlaPyPrefix)
+    sys.path.append("/usr/local/share/carla/resources")
 else:
     carlaLibPath = "/libcarla_utils.so"
     
